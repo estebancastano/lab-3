@@ -18,7 +18,17 @@
 ---
 
 ## Pruebas realizadas a los programas que verificaron su funcionalidad
+### 4. Segmentación:
+#### 4.1 Traducción manual con tabla de segmentos:
+#### - 4.1.1 cálculo paso a paso para cada VA:
 
+| Encabezado 1 | Encabezado 2 | Encabezado 1 | Encabezado 2 | Encabezado 1 | Encabezado 2 |
+|--------------|--------------|--------------|--------------|--------------|--------------|
+| Celda 1,1    | Celda 1,2    | Celda 2,1    | Celda 2,2    | Celda 1,1    | Celda 1,2    | 
+| Celda 1,1    | Celda 1,2    | Celda 2,1    | Celda 2,2    | Celda 2,1    | Celda 2,2    |
+| sfs          | sfs          | sfhb         | dfgdf        | dfhdf        | dfhfd        |
+| dfhdf        |     dfhdf    | dffdh        |  dfhdf       | dfhdf        | dfhdf        |
+| dfhdf        |     dfhdf    |  dfdfh       | dfdf         | dfhdf        | dfhdf        |
 
 ---
 
