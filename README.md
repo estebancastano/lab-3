@@ -77,6 +77,47 @@ Memoria Física
 |   Segmento C      |
 +-------------------+
 ```
+
+---
+### 5. Paginación:
+#### 5.1 Actividad: Cálculo de la tabla de páginas:
+#### - 5.1.1 Cálculo de bits para VPN y Offset:
+
+Para descomponer una dirección virtual (VA) de 32 bits con págínas de 4 KB:
+
+- **Offset:** El tamaño de página es de $4\text{ KB} = 2^{12}$ bytes. Por lo tanto, se necesitan 12 bits para el offset para poder direccionar cada byte dentro de la página.
+- **VPN (Virtual Page Number)**: Los bits restantes de la dirección virtual corresponden al VPN.
+  
+    - $\text{VPN bits} = \text{Total bits VA} - \text{bits Offset}$
+    - $\text{VPN bits} = 32 - 12 = \mathbf{20 \text{ bits}}$.
+      
+#### - 5.1.2 Cantidad de entradas en la tabla de páginas:
+El número de entradas en la tabla de páginas (PTEs) es igual al número total de páginas virtuales posibles que el proceso puede direccionar.
+
+- Como el VPN tiene 20 bits, hay $2^{20}$ combinaciones posibles.
+- $\text{Entradas} = 2^{20} = \mathbf{1.048.576 \text{ entradas}}$.
+
+#### - 5.1.3 Tamaño de la tabla de páginas:
+Para calcular el espacio total en memoria que ocupa la tabla de un solo proceso, multiplicamos el número de entradas por el tamaño de cada PTE de 4 bytes :
+
+- $\text{Tamaño} = \text{Número de entradas} \times \text{Tamaño de PTE}$
+- $\text{Tamaño} = 1.048.576 \times 4 \text{ bytes} = 4.194.304 \text{ bytes} = \mathbf{4 \text{ MB}}$.
+
+#### ¿Es razonable?
+En sistemas modernos con gigabytes de RAM, 4 MB parece poco. Sin embargo, si tienes 100 procesos activos, solo las tablas de páginas ocuparían 400 MB de memoria física. Para procesos pequeños que solo usan unos pocos KB de memoria, tener una tabla de 4 MB es ineficiente y poco razonable, lo que motiva el uso de estructuras como tablas de páginas multinivel.
+
+#### - 5.1.4 Bits del PFN y Bits de Control:
+Dentro de una PTE de 4 bytes (32 bits), la información se divide entre la dirección física y metadatos:
+
+- **Bits para el PFN**: Según la tabla dada, el espacio físico es de 20 bits y el tamaño de página/marco es de $2^{12}$ bytes.
+       - $\text{PFN bits} = \text{Total bits físicos} - \text{bits Offset}$
+       - $\text{PFN bits} = 20 - 12 = \mathbf{8 \text{ bits}}$. (Identifica uno de los 256 marcos físicos disponibles).
+- **Bits restantes**: Si la PTE es de 32 bits y el PFN usa 8, quedan **24 bits** para control.
+- **3 Bits de control comunes y su función**:
+    - **Present Bit (P)**: Indica si la págína está actualmente en la memoria física o si ha sido movida al disco (swap).
+    - **Read/Write Bit (R/W)**: Determina si el proceso tiene permiso solo para leer la página o también para escribir en ella.
+    - **Dirty Bit (D)**: Se activa si la página ha sido modificada desde que se cargó en memoria; es crucial para saber si se debe escribir de vuelta al disco al desalojarla.
+
 ---
 
 ## Enlace al vídeo
