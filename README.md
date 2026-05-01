@@ -117,6 +117,47 @@ Dentro de una PTE de 4 bytes (32 bits), la información se divide entre la direc
     - **Present Bit (P)**: Indica si la págína está actualmente en la memoria física o si ha sido movida al disco (swap).
     - **Read/Write Bit (R/W)**: Determina si el proceso tiene permiso solo para leer la página o también para escribir en ella.
     - **Dirty Bit (D)**: Se activa si la página ha sido modificada desde que se cargó en memoria; es crucial para saber si se debe escribir de vuelta al disco al desalojarla.
+      
+---
+#### - 5.2.1 Actividad: Simulador de paginación:
+Está en la carpeta de codes
+
+---
+#### - 5.3.1 Salida completa del simulador
+Al ejecutar el código, la salida generada es la siguiente:
+
+<img width="1174" height="880" alt="image" src="https://github.com/user-attachments/assets/318efe8a-39a3-417e-8b34-b9958e9db879" />
+
+#### - 5.3.2 Análisis de VAs 0x10 y 0xA3 y el rol del SO
+- **0x10**: El VPN es 1. Al consultar la tabla, `page_table[1]` es -1, lo que genera un Page Fault.
+- **0xA3**: El VPN es 10 ($0xA$ en hexadecimal). El valor en `page_table[10]` es 4, por lo que se traduce exitosamente a la dirección física 0x43.
+
+**¿Qué hace el SO ante un Page Fault?** 
+
+En un sistema real, el hardware genera una excepción (trap) hacia el Sistema Operativo. El manejador de fallos de página del SO debe:
+
+1. Verificar si la dirección es válida. Si no lo es, termina el proceso (Segfault).
+2. Si es válida pero no está en RAM, busca la página en el almacenamiento secundario (disco/swap).
+3. Busca un marco físico libre, carga la página y actualiza la PTE (Page Table Entry) con el nuevo PFN y el bit de presencia en 1.
+4. Reinicia la instrucción que causó el fallo.
+
+#### - 5.3.3 Accesos a memoria y costo
+
+Para completar una instrucción simple como un `load`, se requieren 2 accesos a memoria física:
+1. Primer acceso: Consultar la tabla de páginas en memoria para obtener el PFN (traducción).
+2. Segundo acceso: Acceder al dato real en la dirección física calculada.
+
+   **¿Por qué es costoso?**
+   
+   La memoria RAM es significativamente más lenta que el procesador. Duplicar los accesos reduce el rendimiento del sistema a la mitad.
+   **Solución de hardware**: El TLB (Translation Lookaside Buffer). Es una memoria caché de alta velocidad dentro de la CPU que almacena las traducciones VPN $\rightarrow$ PFN recientes, permitiendo traducciones casi instantáneas sin ir a la RAM.
+
+#### - 5.3.4 Paginación vs. Segmentación: Fragmentación
+La gran ventaja de la paginación es que elimina la fragmentación externa.
+
+- En la segmentación, los segmentos tienen tamaños variables, lo que deja huecos irregulares en la memoria física que pueden ser difíciles de reutilizar.
+
+- En la paginación, tanto el espacio virtual como el físico se dividen en trozos de tamaño fijo (páginas y marcos). Cualquier página cabe en cualquier marco disponible, por lo que nunca quedan huecos inutilizables entre asignaciones.
 
 ---
 
