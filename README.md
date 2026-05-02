@@ -160,6 +160,62 @@ La gran ventaja de la paginación es que elimina la fragmentación externa.
 - En la paginación, tanto el espacio virtual como el físico se dividen en trozos de tamaño fijo (páginas y marcos). Cualquier página cabe en cualquier marco disponible, por lo que nunca quedan huecos inutilizables entre asignaciones.
 
 ---
+### 6. Gestión de espacio libre:
+#### 6.1 Actividad: Simulación de estrategias de asignación:
+#### - 6.1.1 Simulación First Fit:
+
+*Estrategia: Recorrer la lista y elegir el primer bloque donde quepa la solicitud.*
+
+- **malloc(212)**: No cabe en 100. Cabe en 500 (Dir: 0x0200). Quedan 288 bytes libres en esa posición.
+
+- **malloc(417)**: No cabe en 100, ni en 288, ni en 200, ni en 300. Cabe en 600 (Dir: 0x0700). Quedan 183 bytes libres.
+
+- **malloc(98)**: Cabe en el primer bloque de 100 (Dir: 0x0100). Quedan 2 bytes libres.
+
+- **malloc(426)**: Falla (NULL). No queda ningún bloque contiguo de al menos 426 bytes.
+
+Lista libre final (First Fit):
+
+`{2 (0x0162), 288 (0x02D4), 200 (0x0400), 300 (0x0500), 183 (0x08A1)}`
+
+
+#### - 6.1.2 Simulación Best Fit:
+Estrategia: Recorrer toda la lista y elegir el bloque que deje el menor remanente posible.
+
+- **malloc(212)**: El más ajustado es 300 (Dir: 0x0500). Quedan 88 bytes.
+
+- **malloc(417)**: El más ajustado es 500 (Dir: 0x0200). Quedan 83 bytes.
+
+- **malloc(98)**: El más ajustado es 100 (Dir: 0x0100). Quedan 2 bytes.
+
+- **malloc(426)**: Cabe en 600 (Dir: 0x0700). Quedan 174 bytes.
+
+Resultado: ¡Con Best Fit todas las solicitudes tuvieron éxito!
+
+#### - 6.1.3 Comparación de Estrategias:
+- **Más fragmentación externa**: En este caso, First Fit. Al ser "descuidado" y usar bloques grandes para solicitudes pequeñas al principio de la lista, agota rápido las opciones para solicitudes grandes posteriores.
+
+- **Minimiza fragmentación**: Best Fit. Al preservar los bloques grandes y usar los que mejor se ajustan, mantiene la capacidad de responder a solicitudes de mayor tamaño.
+
+#### - 6.1.4 Coalescing (Coalescencia):
+El **coalescing** es el proceso de unir dos bloques libres adyacentes en la memoria física para formar un único bloque más grande. Sin esto, la memoria se fragmenta en pedazos pequeños inútiles.
+
+Caso de falla sin coalescing:
+Supongamos que liberas dos bloques contiguos de 150 bytes cada uno.
+
+- **Sin coalescing**: Tienes dos bloques de 150B. Si pides `malloc(250)`, el sistema dirá que no hay espacio, porque no hay ningún bloque contiguo de ese tamaño.
+
+- **Con coalescing**: El sistema nota que están juntos, los une en un bloque de 300B y la solicitud de 250B tiene éxito.
+
+#### - 6.1.5 Fragmentación Interna y Slab Allocator:
+La fragmentación interna ocurre cuando se asigna un bloque de memoria que es ligeramente más grande de lo que el proceso pidió. El espacio sobrante dentro de ese bloque asignado se desperdicia porque el gestor no puede dárselo a nadie más.
+
+Slab Allocator:
+Es un gestor que crea "cachés" de objetos de tamaño fijo (por ejemplo, una caché solo para estructuras de procesos).
+
+- **Cuándo aparece**: Aparece cuando el tamaño del objeto pedido no encaja perfectamente en las ranuras predefinidas del slab. Si el slab reserva espacios de 32 bytes y tú pides 20 bytes, los 12 bytes restantes son fragmentación interna dentro de ese "slot".
+
+---
 
 ## Enlace al vídeo
 
