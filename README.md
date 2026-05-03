@@ -215,6 +215,43 @@ Es un gestor que crea "cachés" de objetos de tamaño fijo (por ejemplo, una cac
 
 - **Cuándo aparece**: Aparece cuando el tamaño del objeto pedido no encaja perfectamente en las ranuras predefinidas del slab. Si el slab reserva espacios de 32 bytes y tú pides 20 bytes, los 12 bytes restantes son fragmentación interna dentro de ese "slot".
 
+#### - 6.2.1 Actividad: Fragmentación
+Está en la carpeta codes
+<img width="657" height="427" alt="image" src="https://github.com/user-attachments/assets/df98991e-663d-4b5f-8299-d3f33ea5a042" />
+
+
+#### 6.3 Actividad: Fragmentación en glibc — Análisis
+#### - 6.3.1 Análisis de Direcciones y Metadatos
+Al observar la salida del programa `fragmentation.c`, se determinó lo siguiente:
+
+- **No contigüidad**: Las direcciones de memoria asignadas por `malloc()` no son consecutivas. Existe un patrón de separación (gap) entre el final de un bloque y el inicio del siguiente que es mayor al tamaño solicitado en el arreglo `sizes[]`.
+
+- **Presencia de Headers**: Este espacio extra entre bloques confirma que el asignador de `glibc` inserta metadatos o cabeceras (headers) justo antes de la dirección que entrega al usuario. Estos headers son esenciales para que la función `free()` conozca el tamaño del bloque a liberar.
+
+- **Alineación**: Además, se observa que las direcciones terminan frecuentemente en múltiplos de 8 o 16, lo que evidencia que el sistema aplica alineación de memoria para optimizar el rendimiento del procesador.
+
+#### - 6.3.2 Resultado del Experimento de Fragmentación
+Tras liberar los bloques en los índices pares (0, 2, 4, 6, 8) e intentar asignar un bloque grande de 1,500 bytes:
+
+- **Estado del Heap**: Aunque se liberó un total de 1,616 bytes (suma de los bloques pares), el espacio quedó "agujereado" por los bloques de los índices impares que permanecieron ocupados.
+
+- **Fragmentación Externa**: El experimento demuestra la existencia de fragmentación externa: hay suficiente memoria libre total, pero no existe un único bloque contiguo lo suficientemente grande para satisfacer la solicitud de 1,500 bytes.
+
+- **Comportamiento de glibc**: Si el `malloc(1500)` tuvo éxito, no fue porque reutilizara los huecos pequeños, sino porque el asignador solicitó al Kernel expandir el heap para obtener un nuevo bloque de memoria limpia al final.
+
+#### - 6.3.3 Niveles de Gestión: Usuario vs. Kernel
+Es fundamental distinguir por qué existen dos niveles de asignación de memoria:
+
+- **Asignador de Usuario (malloc/glibc)**: Trabaja a nivel de bytes. Su objetivo es la micro-gestión de solicitudes pequeñas y variadas de la aplicación, minimizando el desperdicio y maximizando la velocidad.
+
+- **Asignador del Kernel (Buddy System/Slab)**: Trabaja a nivel de páginas (usualmente 4 KB). No gestiona bytes individuales, sino grandes bloques de RAM física que reparte entre los diferentes procesos.
+
+- **Justificación de los dos niveles**:
+
+  - **Rendimiento**: Las llamadas al sistema (syscalls) son lentas. malloc pide memoria "al por mayor" al Kernel y la reparte "al detal" internamente, evitando entrar al Kernel por cada pequeña variable.
+
+  - **Aislamiento**: El Kernel se encarga de proteger la memoria entre procesos, mientras que la librería de usuario gestiona la estructura interna del heap del proceso.
+
 ---
 
 ## Enlace al vídeo
