@@ -215,10 +215,13 @@ Es un gestor que crea "cachés" de objetos de tamaño fijo (por ejemplo, una cac
 
 - **Cuándo aparece**: Aparece cuando el tamaño del objeto pedido no encaja perfectamente en las ranuras predefinidas del slab. Si el slab reserva espacios de 32 bytes y tú pides 20 bytes, los 12 bytes restantes son fragmentación interna dentro de ese "slot".
 
+---
+
 #### - 6.2.1 Actividad: Fragmentación
 Está en la carpeta codes
 <img width="657" height="427" alt="image" src="https://github.com/user-attachments/assets/df98991e-663d-4b5f-8299-d3f33ea5a042" />
 
+---
 
 #### 6.3 Actividad: Fragmentación en glibc — Análisis
 #### - 6.3.1 Análisis de Direcciones y Metadatos
@@ -229,6 +232,8 @@ Al observar la salida del programa `fragmentation.c`, se determinó lo siguiente
 - **Presencia de Headers**: Este espacio extra entre bloques confirma que el asignador de `glibc` inserta metadatos o cabeceras (headers) justo antes de la dirección que entrega al usuario. Estos headers son esenciales para que la función `free()` conozca el tamaño del bloque a liberar.
 
 - **Alineación**: Además, se observa que las direcciones terminan frecuentemente en múltiplos de 8 o 16, lo que evidencia que el sistema aplica alineación de memoria para optimizar el rendimiento del procesador.
+
+---
 
 #### - 6.3.2 Resultado del Experimento de Fragmentación
 Tras liberar los bloques en los índices pares (0, 2, 4, 6, 8) e intentar asignar un bloque grande de 1,500 bytes:
@@ -276,12 +281,17 @@ El TLB es una caché de hardware que almacena traducciones recientes de VPN a PF
 
 - **Acceso Aleatorio**: Presenta una baja localidad. Cada acceso apunta probablemente a una página distinta que no está en la caché. Esto provoca constantes TLB misses, obligando al hardware a consultar la tabla de páginas en la memoria principal (mucho más lenta) para cada traducción. El hit rate cae drásticamente.
 
-3. Impacto de páginas de 64 KB frente a 4 KB
+#### 7.1.3 Impacto de páginas de 64 KB frente a 4 KB
 Desde el punto de vista del TLB: La situación mejoraría para el acceso aleatorio. Una página de 64 KB es 16 veces más grande que una de 4 KB, lo que significa que cada entrada del TLB "cubre" mucha más memoria física. Esto aumenta la probabilidad de que una dirección aleatoria caiga dentro de una página ya traducida en el TLB (mayor cobertura).
 
 Desde el punto de vista del uso de memoria: La situación empeoraría debido a la fragmentación interna. Si un proceso solo necesita pequeños bloques de datos pero el sistema asigna páginas de 64 KB, se desperdicia mucha memoria RAM física que no puede ser utilizada por otros procesos.
 
-4. No teniamos instalado `perf`
+#### 7.1.4. No teniamos instalado `perf`
+
+---
+
+#### 7.2 Actividad: Comportamiento de los TLB:
+#### 7.2.1:
 
 ---
 
