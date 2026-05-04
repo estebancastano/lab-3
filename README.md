@@ -261,8 +261,8 @@ Es fundamental distinguir por qué existen dos niveles de asignación de memoria
 ### 7 TLBs — Translation Lookaside Buffer:
 <img width="659" height="233" alt="image" src="https://github.com/user-attachments/assets/855f9957-fc4c-4528-a4dc-a877d1766a92" />
 
-#### 7.1 Actividad: Localidad y TLB — Análisis
-#### 7.1.1 Comparativa de rendimiento
+#### - 7.1 Actividad: Localidad y TLB — Análisis
+#### - 7.1.1 Comparativa de rendimiento
 Basado en las tres ejecuciones de tlb_locality, los tiempos son los siguientes:
 
 | Ejecución   | Secuencial (ms) | Aleatorio (ms) | Factor de lentitud (Aleatorio / Secuencial) |
@@ -274,24 +274,24 @@ Basado en las tres ejecuciones de tlb_locality, los tiempos son los siguientes:
 
 El acceso aleatorio es, en promedio, **4.35 veces más lento** que el secuencial.
 
-#### 7.1.2 Explicación mediante el modelo del TLB
+#### - 7.1.2 Explicación mediante el modelo del TLB
 El TLB es una caché de hardware que almacena traducciones recientes de VPN a PFN para acelerar el acceso a memoria.
 
 - **Acceso Secuencial**: Presenta una alta localidad espacial. Al acceder a un elemento, la traducción de la página se guarda en el TLB; como el siguiente elemento está en la misma página, ocurre un TLB hit. El hit rate es muy cercano al 100%, ya que solo hay un fallo (miss) cuando se cambia de página (cada 4 KB).
 
 - **Acceso Aleatorio**: Presenta una baja localidad. Cada acceso apunta probablemente a una página distinta que no está en la caché. Esto provoca constantes TLB misses, obligando al hardware a consultar la tabla de páginas en la memoria principal (mucho más lenta) para cada traducción. El hit rate cae drásticamente.
 
-#### 7.1.3 Impacto de páginas de 64 KB frente a 4 KB
+#### - 7.1.3 Impacto de páginas de 64 KB frente a 4 KB
 Desde el punto de vista del TLB: La situación mejoraría para el acceso aleatorio. Una página de 64 KB es 16 veces más grande que una de 4 KB, lo que significa que cada entrada del TLB "cubre" mucha más memoria física. Esto aumenta la probabilidad de que una dirección aleatoria caiga dentro de una página ya traducida en el TLB (mayor cobertura).
 
 Desde el punto de vista del uso de memoria: La situación empeoraría debido a la fragmentación interna. Si un proceso solo necesita pequeños bloques de datos pero el sistema asigna páginas de 64 KB, se desperdicia mucha memoria RAM física que no puede ser utilizada por otros procesos.
 
-#### 7.1.4. No teniamos instalado `perf`
+#### - 7.1.4. No teniamos instalado `perf`
 
 ---
 
-#### 7.2 Actividad: Comportamiento de los TLB:
-#### 7.2.1:
+#### - 7.2 Actividad: Comportamiento de los TLB:
+#### - 7.2.1:
 
 ---
 
