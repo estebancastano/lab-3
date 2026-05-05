@@ -20,7 +20,7 @@
 ## Pruebas realizadas a los programas que verificaron su funcionalidad
 ### 4. Segmentación:
 #### 4.1 Traducción manual con tabla de segmentos:
-#### - 4.1.1 cálculo paso a paso para cada VA:
+#### - 4.1.1. cálculo paso a paso para cada VA:
 
 | VA (hex) | Selector | Offset (hex) | Segmento | Cálculo                     | PA o Excepción |
 |----------|----------|--------------|----------|-----------------------------|----------------|
@@ -81,7 +81,7 @@ Memoria Física
 ---
 ### 5. Paginación:
 #### 5.1 Actividad: Cálculo de la tabla de páginas:
-#### - 5.1.1 Cálculo de bits para VPN y Offset:
+#### - 5.1.1. Cálculo de bits para VPN y Offset:
 
 Para descomponer una dirección virtual (VA) de 32 bits con págínas de 4 KB:
 
@@ -91,13 +91,13 @@ Para descomponer una dirección virtual (VA) de 32 bits con págínas de 4 KB:
     - $\text{VPN bits} = \text{Total bits VA} - \text{bits Offset}$
     - $\text{VPN bits} = 32 - 12 = \mathbf{20 \text{ bits}}$.
       
-#### - 5.1.2 Cantidad de entradas en la tabla de páginas:
+#### - 5.1.2. Cantidad de entradas en la tabla de páginas:
 El número de entradas en la tabla de páginas (PTEs) es igual al número total de páginas virtuales posibles que el proceso puede direccionar.
 
 - Como el VPN tiene 20 bits, hay $2^{20}$ combinaciones posibles.
 - $\text{Entradas} = 2^{20} = \mathbf{1.048.576 \text{ entradas}}$.
 
-#### - 5.1.3 Tamaño de la tabla de páginas:
+#### - 5.1.3. Tamaño de la tabla de páginas:
 Para calcular el espacio total en memoria que ocupa la tabla de un solo proceso, multiplicamos el número de entradas por el tamaño de cada PTE de 4 bytes :
 
 - $\text{Tamaño} = \text{Número de entradas} \times \text{Tamaño de PTE}$
@@ -106,7 +106,7 @@ Para calcular el espacio total en memoria que ocupa la tabla de un solo proceso,
 #### ¿Es razonable?
 En sistemas modernos con gigabytes de RAM, 4 MB parece poco. Sin embargo, si tienes 100 procesos activos, solo las tablas de páginas ocuparían 400 MB de memoria física. Para procesos pequeños que solo usan unos pocos KB de memoria, tener una tabla de 4 MB es ineficiente y poco razonable, lo que motiva el uso de estructuras como tablas de páginas multinivel.
 
-#### - 5.1.4 Bits del PFN y Bits de Control:
+#### - 5.1.4. Bits del PFN y Bits de Control:
 Dentro de una PTE de 4 bytes (32 bits), la información se divide entre la dirección física y metadatos:
 
 - **Bits para el PFN**: Según la tabla dada, el espacio físico es de 20 bits y el tamaño de página/marco es de $2^{12}$ bytes.
@@ -119,16 +119,16 @@ Dentro de una PTE de 4 bytes (32 bits), la información se divide entre la direc
     - **Dirty Bit (D)**: Se activa si la página ha sido modificada desde que se cargó en memoria; es crucial para saber si se debe escribir de vuelta al disco al desalojarla.
       
 ---
-#### - 5.2.1 Actividad: Simulador de paginación:
+#### - 5.2.1. Actividad: Simulador de paginación:
 Está en la carpeta de codes
 
 ---
-#### - 5.3.1 Salida completa del simulador
+#### - 5.3.1. Salida completa del simulador
 Al ejecutar el código, la salida generada es la siguiente:
 
 <img width="1174" height="880" alt="image" src="https://github.com/user-attachments/assets/318efe8a-39a3-417e-8b34-b9958e9db879" />
 
-#### - 5.3.2 Análisis de VAs 0x10 y 0xA3 y el rol del SO
+#### - 5.3.2. Análisis de VAs 0x10 y 0xA3 y el rol del SO
 - **0x10**: El VPN es 1. Al consultar la tabla, `page_table[1]` es -1, lo que genera un Page Fault.
 - **0xA3**: El VPN es 10 ($0xA$ en hexadecimal). El valor en `page_table[10]` es 4, por lo que se traduce exitosamente a la dirección física 0x43.
 
@@ -141,7 +141,7 @@ En un sistema real, el hardware genera una excepción (trap) hacia el Sistema Op
 3. Busca un marco físico libre, carga la página y actualiza la PTE (Page Table Entry) con el nuevo PFN y el bit de presencia en 1.
 4. Reinicia la instrucción que causó el fallo.
 
-#### - 5.3.3 Accesos a memoria y costo
+#### - 5.3.3. Accesos a memoria y costo
 
 Para completar una instrucción simple como un `load`, se requieren 2 accesos a memoria física:
 1. Primer acceso: Consultar la tabla de páginas en memoria para obtener el PFN (traducción).
@@ -152,7 +152,7 @@ Para completar una instrucción simple como un `load`, se requieren 2 accesos a 
    La memoria RAM es significativamente más lenta que el procesador. Duplicar los accesos reduce el rendimiento del sistema a la mitad.
    **Solución de hardware**: El TLB (Translation Lookaside Buffer). Es una memoria caché de alta velocidad dentro de la CPU que almacena las traducciones VPN $\rightarrow$ PFN recientes, permitiendo traducciones casi instantáneas sin ir a la RAM.
 
-#### - 5.3.4 Paginación vs. Segmentación: Fragmentación
+#### - 5.3.4. Paginación vs. Segmentación: Fragmentación
 La gran ventaja de la paginación es que elimina la fragmentación externa.
 
 - En la segmentación, los segmentos tienen tamaños variables, lo que deja huecos irregulares en la memoria física que pueden ser difíciles de reutilizar.
@@ -162,7 +162,7 @@ La gran ventaja de la paginación es que elimina la fragmentación externa.
 ---
 ### 6. Gestión de espacio libre:
 #### 6.1 Actividad: Simulación de estrategias de asignación:
-#### - 6.1.1 Simulación First Fit:
+#### - 6.1.1. Simulación First Fit:
 
 *Estrategia: Recorrer la lista y elegir el primer bloque donde quepa la solicitud.*
 
@@ -179,7 +179,7 @@ Lista libre final (First Fit):
 `{2 (0x0162), 288 (0x02D4), 200 (0x0400), 300 (0x0500), 183 (0x08A1)}`
 
 
-#### - 6.1.2 Simulación Best Fit:
+#### - 6.1.2. Simulación Best Fit:
 Estrategia: Recorrer toda la lista y elegir el bloque que deje el menor remanente posible.
 
 - **malloc(212)**: El más ajustado es 300 (Dir: 0x0500). Quedan 88 bytes.
@@ -192,12 +192,12 @@ Estrategia: Recorrer toda la lista y elegir el bloque que deje el menor remanent
 
 Resultado: ¡Con Best Fit todas las solicitudes tuvieron éxito!
 
-#### - 6.1.3 Comparación de Estrategias:
+#### - 6.1.3. Comparación de Estrategias:
 - **Más fragmentación externa**: En este caso, First Fit. Al ser "descuidado" y usar bloques grandes para solicitudes pequeñas al principio de la lista, agota rápido las opciones para solicitudes grandes posteriores.
 
 - **Minimiza fragmentación**: Best Fit. Al preservar los bloques grandes y usar los que mejor se ajustan, mantiene la capacidad de responder a solicitudes de mayor tamaño.
 
-#### - 6.1.4 Coalescing (Coalescencia):
+#### - 6.1.4. Coalescing (Coalescencia):
 El **coalescing** es el proceso de unir dos bloques libres adyacentes en la memoria física para formar un único bloque más grande. Sin esto, la memoria se fragmenta en pedazos pequeños inútiles.
 
 Caso de falla sin coalescing:
@@ -207,7 +207,7 @@ Supongamos que liberas dos bloques contiguos de 150 bytes cada uno.
 
 - **Con coalescing**: El sistema nota que están juntos, los une en un bloque de 300B y la solicitud de 250B tiene éxito.
 
-#### - 6.1.5 Fragmentación Interna y Slab Allocator:
+#### - 6.1.5. Fragmentación Interna y Slab Allocator:
 La fragmentación interna ocurre cuando se asigna un bloque de memoria que es ligeramente más grande de lo que el proceso pidió. El espacio sobrante dentro de ese bloque asignado se desperdicia porque el gestor no puede dárselo a nadie más.
 
 Slab Allocator:
@@ -217,14 +217,14 @@ Es un gestor que crea "cachés" de objetos de tamaño fijo (por ejemplo, una cac
 
 ---
 
-#### - 6.2.1 Actividad: Fragmentación
+#### - 6.2.1. Actividad: Fragmentación
 Está en la carpeta codes
 <img width="657" height="427" alt="image" src="https://github.com/user-attachments/assets/df98991e-663d-4b5f-8299-d3f33ea5a042" />
 
 ---
 
 #### 6.3 Actividad: Fragmentación en glibc — Análisis
-#### - 6.3.1 Análisis de Direcciones y Metadatos
+#### - 6.3.1. Análisis de Direcciones y Metadatos
 Al observar la salida del programa `fragmentation.c`, se determinó lo siguiente:
 
 - **No contigüidad**: Las direcciones de memoria asignadas por `malloc()` no son consecutivas. Existe un patrón de separación (gap) entre el final de un bloque y el inicio del siguiente que es mayor al tamaño solicitado en el arreglo `sizes[]`.
@@ -235,7 +235,7 @@ Al observar la salida del programa `fragmentation.c`, se determinó lo siguiente
 
 ---
 
-#### - 6.3.2 Resultado del Experimento de Fragmentación
+#### - 6.3.2. Resultado del Experimento de Fragmentación
 Tras liberar los bloques en los índices pares (0, 2, 4, 6, 8) e intentar asignar un bloque grande de 1,500 bytes:
 
 - **Estado del Heap**: Aunque se liberó un total de 1,616 bytes (suma de los bloques pares), el espacio quedó "agujereado" por los bloques de los índices impares que permanecieron ocupados.
@@ -244,7 +244,7 @@ Tras liberar los bloques en los índices pares (0, 2, 4, 6, 8) e intentar asigna
 
 - **Comportamiento de glibc**: Si el `malloc(1500)` tuvo éxito, no fue porque reutilizara los huecos pequeños, sino porque el asignador solicitó al Kernel expandir el heap para obtener un nuevo bloque de memoria limpia al final.
 
-#### - 6.3.3 Niveles de Gestión: Usuario vs. Kernel
+#### - 6.3.3. Niveles de Gestión: Usuario vs. Kernel
 Es fundamental distinguir por qué existen dos niveles de asignación de memoria:
 
 - **Asignador de Usuario (malloc/glibc)**: Trabaja a nivel de bytes. Su objetivo es la micro-gestión de solicitudes pequeñas y variadas de la aplicación, minimizando el desperdicio y maximizando la velocidad.
@@ -262,7 +262,7 @@ Es fundamental distinguir por qué existen dos niveles de asignación de memoria
 <img width="659" height="233" alt="image" src="https://github.com/user-attachments/assets/855f9957-fc4c-4528-a4dc-a877d1766a92" />
 
 #### - 7.1 Actividad: Localidad y TLB — Análisis
-#### - 7.1.1 Comparativa de rendimiento
+#### - 7.1.1. Comparativa de rendimiento
 Basado en las tres ejecuciones de tlb_locality, los tiempos son los siguientes:
 
 | Ejecución   | Secuencial (ms) | Aleatorio (ms) | Factor de lentitud (Aleatorio / Secuencial) |
@@ -274,14 +274,14 @@ Basado en las tres ejecuciones de tlb_locality, los tiempos son los siguientes:
 
 El acceso aleatorio es, en promedio, **4.35 veces más lento** que el secuencial.
 
-#### - 7.1.2 Explicación mediante el modelo del TLB
+#### - 7.1.2. Explicación mediante el modelo del TLB
 El TLB es una caché de hardware que almacena traducciones recientes de VPN a PFN para acelerar el acceso a memoria.
 
 - **Acceso Secuencial**: Presenta una alta localidad espacial. Al acceder a un elemento, la traducción de la página se guarda en el TLB; como el siguiente elemento está en la misma página, ocurre un TLB hit. El hit rate es muy cercano al 100%, ya que solo hay un fallo (miss) cuando se cambia de página (cada 4 KB).
 
 - **Acceso Aleatorio**: Presenta una baja localidad. Cada acceso apunta probablemente a una página distinta que no está en la caché. Esto provoca constantes TLB misses, obligando al hardware a consultar la tabla de páginas en la memoria principal (mucho más lenta) para cada traducción. El hit rate cae drásticamente.
 
-#### - 7.1.3 Impacto de páginas de 64 KB frente a 4 KB
+#### - 7.1.3. Impacto de páginas de 64 KB frente a 4 KB
 Desde el punto de vista del TLB: La situación mejoraría para el acceso aleatorio. Una página de 64 KB es 16 veces más grande que una de 4 KB, lo que significa que cada entrada del TLB "cubre" mucha más memoria física. Esto aumenta la probabilidad de que una dirección aleatoria caiga dentro de una página ya traducida en el TLB (mayor cobertura).
 
 Desde el punto de vista del uso de memoria: La situación empeoraría debido a la fragmentación interna. Si un proceso solo necesita pequeños bloques de datos pero el sistema asigna páginas de 64 KB, se desperdicia mucha memoria RAM física que no puede ser utilizada por otros procesos.
@@ -291,7 +291,26 @@ Desde el punto de vista del uso de memoria: La situación empeoraría debido a l
 ---
 
 #### - 7.2 Actividad: Comportamiento de los TLB:
-#### - 7.2.1:
+#### - 7.2.1:Cobertura del TLB y procesos modernos
+
+- **Cálculo de cobertura**: Para determinar cuánta memoria puede "cubrir" (mapear) el TLB sin generar fallos, multiplicamos el número de entradas por el tamaño de la página: $64 \text{ entradas} \times 4 \text{ KB/página} = \mathbf{256 \text{ KB}}$.
+
+- **¿Es suficiente?**: Para un proceso moderno típico, **no es suficiente**. Las aplicaciones actuales (navegadores, bases de datos, entornos de ejecución como Java o Python) manejan conjuntos de datos de megabytes o gigabytes. Con una cobertura de solo 256 KB, el proceso sufriría constantes **TLB misses**, lo que degradaría significativamente el rendimiento al tener que consultar la tabla de páginas en RAM con frecuencia.
+
+#### - 7.2.2. TLB Shootdown en sistemas multiprocesador
+
+- **Definición**: Un **TLB shootdown** es el mecanismo utilizado en sistemas con múltiples núcleos (multiprocesadores) para mantener la coherencia de las traducciones de memoria entre los diferentes TLB locales de cada núcleo.
+
+- **Situación en la que ocurre**: Ocurre cuando el Sistema Operativo modifica una entrada en la tabla de páginas que es compartida por varios núcleos (por ejemplo, al liberar memoria o cambiar permisos). El núcleo que realiza el cambio debe "notificar" a los demás núcleos que sus copias locales de esa traducción en sus propios TLB ya no son válidas y deben ser eliminadas.
+
+- **Por qué es costoso**: Es una operación de alto costo porque requiere enviar una **interrupción entre procesadores (IPI)**. Esto obliga a los otros núcleos a detener su ejecución actual, limpiar su TLB (o entradas específicas) y esperar una sincronización global antes de continuar, lo que genera una gran latencia en el sistema.
+
+  #### - 7.2.3. Gestión por Hardware (CISC) vs. Software (RISC)
+
+- **Hardware (CISC/x86)**: El hardware conoce la estructura exacta de la tabla de páginas. Ante un *miss*, el procesador "camina" por la tabla automáticamente (hardware page-table walk) para encontrar la traducción y cargarla en el TLB sin intervención del SO.
+
+- **Software (RISC/MIPS)**: Ante un miss, el hardware simplemente genera una excepción (trap) y le entrega el control al Sistema Operativo. El manejador de excepciones del SO busca la traducción y utiliza instrucciones especiales para cargarla manualmente en el TLB.
+- **Flexibilidad**: La gestión por software ofrece mayor flexibilidad al diseñador del SO. Esto se debe a que el SO puede implementar cualquier estructura de tabla de páginas (multinivel, invertida, hash, etc.) sin estar limitado a lo que el hardware espera, facilitando la innovación y el control total sobre la gestión de memoria.
 
 ---
 
