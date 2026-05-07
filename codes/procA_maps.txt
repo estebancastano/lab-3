@@ -1,0 +1,22 @@
+654d4db7b000-654d4db7c000 r--p 00000000 00:43 41658296553364194          /mnt/c/Users/USUARIO/Desktop/taller_memoria/punto1/mem_map
+654d4db7c000-654d4db7d000 r-xp 00001000 00:43 41658296553364194          /mnt/c/Users/USUARIO/Desktop/taller_memoria/punto1/mem_map
+654d4db7d000-654d4db7e000 r--p 00002000 00:43 41658296553364194          /mnt/c/Users/USUARIO/Desktop/taller_memoria/punto1/mem_map
+654d4db7e000-654d4db7f000 r--p 00002000 00:43 41658296553364194          /mnt/c/Users/USUARIO/Desktop/taller_memoria/punto1/mem_map
+654d4db7f000-654d4db80000 rw-p 00003000 00:43 41658296553364194          /mnt/c/Users/USUARIO/Desktop/taller_memoria/punto1/mem_map
+654d577c3000-654d577e4000 rw-p 00000000 00:00 0                          [heap]
+7a6351c00000-7a6351c28000 r--p 00000000 08:30 12801                      /usr/lib/x86_64-linux-gnu/libc.so.6
+7a6351c28000-7a6351db0000 r-xp 00028000 08:30 12801                      /usr/lib/x86_64-linux-gnu/libc.so.6
+7a6351db0000-7a6351dff000 r--p 001b0000 08:30 12801                      /usr/lib/x86_64-linux-gnu/libc.so.6
+7a6351dff000-7a6351e03000 r--p 001fe000 08:30 12801                      /usr/lib/x86_64-linux-gnu/libc.so.6
+7a6351e03000-7a6351e05000 rw-p 00202000 08:30 12801                      /usr/lib/x86_64-linux-gnu/libc.so.6
+7a6351e05000-7a6351e12000 rw-p 00000000 00:00 0 
+7a6351fde000-7a6351fe1000 rw-p 00000000 00:00 0 
+7a6351fe6000-7a6351fe8000 rw-p 00000000 00:00 0 
+7a6351fe8000-7a6351fe9000 r--p 00000000 08:30 12598                      /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7a6351fe9000-7a6352014000 r-xp 00001000 08:30 12598                      /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7a6352014000-7a635201e000 r--p 0002c000 08:30 12598                      /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7a635201e000-7a6352020000 r--p 00036000 08:30 12598                      /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7a6352020000-7a6352022000 rw-p 00038000 08:30 12598                      /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+7ffc61f75000-7ffc61f97000 rw-p 00000000 00:00 0                          [stack]
+7ffc61fb2000-7ffc61fb6000 r--p 00000000 00:00 0                          [vvar]
+7ffc61fb6000-7ffc61fb8000 r-xp 00000000 00:00 0                          [vdso]
