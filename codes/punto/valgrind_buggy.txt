@@ -1,0 +1,40 @@
+==3363== Memcheck, a memory error detector
+==3363== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==3363== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
+==3363== Command: ./buggy_mem
+==3363== 
+==3363== Invalid write of size 4
+==3363==    at 0x1091E3: main (buggy_mem.c:9)
+==3363==  Address 0x4a74054 is 0 bytes after a block of size 20 alloc'd
+==3363==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3363==    by 0x1091BE: main (buggy_mem.c:7)
+==3363== 
+==3363== Invalid read of size 4
+==3363==    at 0x109231: main (buggy_mem.c:18)
+==3363==  Address 0x4a74040 is 0 bytes inside a block of size 20 free'd
+==3363==    at 0x484988F: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3363==    by 0x10922C: main (buggy_mem.c:17)
+==3363==  Block was alloc'd at
+==3363==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3363==    by 0x1091BE: main (buggy_mem.c:7)
+==3363== 
+hola mundo
+p[0] = 0
+==3363== 
+==3363== HEAP SUMMARY:
+==3363==     in use at exit: 100 bytes in 1 blocks
+==3363==   total heap usage: 3 allocs, 2 frees, 4,216 bytes allocated
+==3363== 
+==3363== 100 bytes in 1 blocks are definitely lost in loss record 1 of 1
+==3363==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3363==    by 0x1091F8: main (buggy_mem.c:12)
+==3363== 
+==3363== LEAK SUMMARY:
+==3363==    definitely lost: 100 bytes in 1 blocks
+==3363==    indirectly lost: 0 bytes in 0 blocks
+==3363==      possibly lost: 0 bytes in 0 blocks
+==3363==    still reachable: 0 bytes in 0 blocks
+==3363==         suppressed: 0 bytes in 0 blocks
+==3363== 
+==3363== For lists of detected and suppressed errors, rerun with: -s
+==3363== ERROR SUMMARY: 3 errors from 3 contexts (suppressed: 0 from 0)
