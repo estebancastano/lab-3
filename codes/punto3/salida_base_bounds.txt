@@ -1,0 +1,18 @@
+--- Proceso A (base=32, bounds=64) ---
+  VA=  0 -> PA= 32
+  VA= 10 -> PA= 42
+  VA= 63 -> PA= 95
+  [EXCEPCION] VA=64 viola bounds=64
+  [EXCEPCION] VA=100 viola bounds=64
+--- Proceso B (base=128, bounds=80) ---
+  VA=  0 -> PA=128
+  VA= 10 -> PA=138
+  VA= 63 -> PA=191
+  VA= 64 -> PA=192
+  [EXCEPCION] VA=100 viola bounds=80
+--- Proceso C (base=0, bounds=32) ---
+  VA=  0 -> PA=  0
+  VA= 10 -> PA= 10
+  [EXCEPCION] VA=63 viola bounds=32
+  [EXCEPCION] VA=64 viola bounds=32
+  [EXCEPCION] VA=100 viola bounds=32
