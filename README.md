@@ -9,10 +9,81 @@
 
 ## Documentación del código
 
+### Punto 1 — `mem_map.c`
+
+Programa que muestra las direcciones virtuales de las distintas regiones de memoria de un proceso.
+
+- **`int global_var`**: variable global inicializada, se almacena en el segmento de datos (.data) del ejecutable.
+- **`int main()`**: función principal. Declara una variable local (almacenada en el stack), reserva memoria dinámica con `malloc` (almacenada en el heap) e imprime las direcciones de cada elemento junto con el PID del proceso.
+- **`getchar()`**: pausa la ejecución del programa para permitir consultar `/proc/[pid]/maps` mientras el proceso sigue vivo.
+- **`free(heap_var)`**: libera la memoria reservada en el heap antes de terminar.
+
+### Punto 2 — `heap_demo.c`
+
+Programa que demuestra el uso correcto de la API de memoria dinámica.
+
+- **`malloc(n * sizeof(int))`**: reserva memoria para 10 enteros en el heap.
+- **`realloc(arr, 20 * sizeof(int))`**: redimensiona el bloque previamente asignado para que pueda contener 20 enteros, conservando los valores originales.
+- **`free(arr)`**: libera toda la memoria reservada antes de terminar el programa.
+
+### Punto 2 — `buggy_mem.c`
+
+Programa que contiene tres errores clásicos de memoria de manera intencional, para ser detectados con Valgrind.
+
+- **Error 1 (buffer overflow)**: el bucle escribe en `p[5]` cuando solo hay 5 posiciones válidas (`p[0]` a `p[4]`).
+- **Error 2 (memory leak)**: se reserva memoria con `malloc(100)` para `q` pero nunca se libera con `free`.
+- **Error 3 (use-after-free)**: se accede a `p[0]` después de haber liberado el puntero con `free(p)`.
+
+### Punto 2 — `buggy_mem_fixed.c`
+
+Versión corregida del programa anterior con las tres correcciones aplicadas:
+
+- Cambio de `i <= 5` a `i < 5` para evitar el buffer overflow.
+- Adición de `free(q)` después de imprimir la cadena.
+- Reordenamiento del `printf` para que se ejecute antes de `free(p)`.
+
+### Punto 3 — `base_bounds.c`
+
+Simulador del mecanismo de traducción de direcciones base & bounds.
+
+- **`typedef struct { int base; int bounds; } Registro`**: estructura que representa los dos registros de hardware de un proceso: la dirección física base y el tamaño máximo permitido.
+- **`int traducir(Registro r, int va)`**: aplica la fórmula `PA = VA + base` si la dirección virtual está dentro del rango válido (`0 <= VA < bounds`). Si no, imprime una excepción y retorna -1, simulando el comportamiento del hardware ante una violación de límites.
+- **`int main()`**: define tres procesos (A, B y C) con distintos pares base/bounds y traduce un conjunto de direcciones virtuales de prueba para cada uno, mostrando los casos de éxito y las excepciones.
 
 ---
 
 ## Problemas presentados durante el desarrollo de la práctica y sus soluciones
+
+### Problema 1: Configuración del entorno Linux en Windows
+
+Al inicio de la práctica no contábamos con un entorno Linux nativo, ya que trabajábamos en Windows.
+
+**Solución:** Se instaló WSL (Windows Subsystem for Linux) con Ubuntu, lo que permitió ejecutar todos los comandos del laboratorio sin necesidad de una máquina virtual o un sistema dual. La instalación se hizo con el comando `wsl --install` desde PowerShell.
+
+### Problema 2: El proceso terminaba antes de poder leer su mapa de memoria
+
+En el Punto 1, al ejecutar `mem_map` y luego intentar leer `/proc/[pid]/maps` en otra terminal, en los primeros intentos el programa ya había terminado y `pgrep` no encontraba el proceso.
+
+**Solución:** Se utilizó `getchar()` dentro del programa para pausarlo justo después de imprimir las direcciones. Mientras el programa esperaba el ENTER, se pudo abrir una segunda terminal y consultar `/proc/[pid]/maps` y `pmap` con el proceso aún vivo.
+
+### Problema 3: Comparar dos procesos al mismo tiempo
+
+Para la actividad 1.4 era necesario ejecutar dos instancias de `mem_map` simultáneamente y obtener el mapa de cada una.
+
+**Solución:** Se abrieron tres terminales en VS Code: dos para mantener cada instancia esperando el ENTER, y una tercera para ejecutar `cat /proc/[pid]/maps` con los PIDs distintos de cada proceso, guardando las salidas en archivos separados (`procA_maps.txt` y `procB_maps.txt`).
+
+### Problema 4: Advertencia del compilador en `buggy_mem.c`
+
+Al compilar `buggy_mem.c` con `gcc -Wall`, el compilador detectó automáticamente uno de los errores intencionales (use-after-free) y mostró un warning, lo que inicialmente generó dudas sobre si el programa se compilaba correctamente.
+
+**Solución:** Se confirmó que se trataba únicamente de una advertencia y no de un error: el ejecutable se generaba sin problemas. La advertencia incluso fue útil porque demostró que el compilador moderno también puede detectar ciertos errores de memoria de forma estática, complementando a Valgrind.
+
+### Problema 5: Lectura inicial de la salida de Valgrind
+
+La salida de Valgrind para `buggy_mem.c` era extensa y al principio resultaba difícil identificar a qué error correspondía cada mensaje.
+
+**Solución:** Se compiló el programa con la opción `-g` para que Valgrind incluyera los números de línea del código fuente en sus reportes. Esto permitió asociar cada mensaje con la línea exacta del bug, facilitando la identificación de los tres errores clásicos.
+
 
 
 ---
