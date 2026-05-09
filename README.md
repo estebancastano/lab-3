@@ -127,7 +127,16 @@ La salida de Valgrind para `buggy_mem.c` era extensa y al principio resultaba di
 
 **Solución:** Se compiló el programa con la opción `-g` para que Valgrind incluyera los números de línea del código fuente en sus reportes. Esto permitió asociar cada mensaje con la línea exacta del bug, facilitando la identificación de los tres errores clásicos.
 
+### Problema 6: Optimización agresiva del compilador
 
+Al ejecutar el código de `tlb_locality.c` , los tiempos de ejecución eran de **0.00 ms** o el programa terminaba instantáneamente sin realizar los cálculos. El compilador (gcc) detectó que los resultados de las sumas o las asignaciones no se utilizaban después del bucle, por lo que eliminó el código muerto para optimizar el rendimiento.
+
+**Solución**: Se compiló utilizando la bandera `-O0` para desactivar todas las optimizaciones, asegurando que el hardware realmente recorra la memoria y se puedan medir los fallos del TLB.
+
+### Problema 7: Variabilidad en las mediciones de tiempo
+En el experimento de tlb_locality.c, los tiempos de ejecución variaban significativamente entre una prueba y otra, lo que dificultaba obtener un "factor de lentitud" constante. El sistema operativo estaba ejecutando otros procesos en segundo plano (navegador, actualizaciones, etc.), lo que generaba ruido en las mediciones y expulsaba datos del TLB/Caché de forma errática.
+
+**Solución**: Se realizaron múltiples ejecuciones (más de las 3 solicitadas) y se cerraron aplicaciones innecesarias. Se utilizó el promedio de las pruebas más estables para obtener un resultado representativo del comportamiento del hardware.
 
 ---
 
