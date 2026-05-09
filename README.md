@@ -387,6 +387,7 @@ Desde el punto de vista del uso de memoria: La situación empeoraría debido a l
 
 ## Enlace al vídeo
 
+https://youtu.be/qbPEB0TFVw4
 
 
 ---
