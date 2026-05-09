@@ -445,5 +445,11 @@ https://youtu.be/qbPEB0TFVw4
 ---
 
 ## Manifiesto de transparencia
+El uso de la IA se limitó a las siguientes áreas:
 
+- **Documentación de Código**: Apoyo en la redacción técnica y estructuración de los resúmenes de los programas paging_sim.c, fragmentation.c y tlb_locality.c.
+
+- **Análisis Conceptual**: Clarificación de conceptos complejos de bajo nivel, como los mecanismos de TLB shootdown y las diferencias entre allocators de usuario y kernel.
+
+- **Estructuración del Informe**: Formateo de datos experimentales y organización de hallazgos para mejorar la legibilidad.
 
