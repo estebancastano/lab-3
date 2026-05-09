@@ -50,6 +50,49 @@ Simulador del mecanismo de traducción de direcciones base & bounds.
 - **`int traducir(Registro r, int va)`**: aplica la fórmula `PA = VA + base` si la dirección virtual está dentro del rango válido (`0 <= VA < bounds`). Si no, imprime una excepción y retorna -1, simulando el comportamiento del hardware ante una violación de límites.
 - **`int main()`**: define tres procesos (A, B y C) con distintos pares base/bounds y traduce un conjunto de direcciones virtuales de prueba para cada uno, mostrando los casos de éxito y las excepciones.
 
+### Punto 5.2 — `paging_sim.c`
+
+Simulador del mecanismo de traducción de direcciones mediante paginación de un solo nivel.
+
+- `#define PAGE_BITS 4` y `PAGE_SIZE`: definen el tamaño de la página (16 bytes), estableciendo que los 4 bits bajos de la VA son el offset y los 4 bits altos el VPN.
+
+- `int page_table[NUM_PAGES]`: arreglo que representa la tabla de páginas en memoria; el índice es el VPN y el contenido es el PFN (marco físico). El valor `-1` simula una página no presente o Page Fault.
+
+- `void traducir(int va)`: realiza la descomposición de la dirección virtual mediante operaciones de bits (`>>` para el VPN y `&` para el offset).
+
+- **Lógica de traducción**: si la entrada en la tabla es válida, calcula la dirección física (PA) desplazando el PFN y combinándolo con el offset ((`pfn << PAGE_BITS) | offset`); de lo contrario, notifica el fallo de página.
+
+- `int main()`: ejecuta una serie de pruebas con direcciones hexadecimales para demostrar casos de traducción exitosa y accesos que generan excepciones por no estar mapeados en la tabla.
+
+### Punto 6.2 — `fragmentation.c`
+
+Programa de experimentación que demuestra el impacto de la fragmentación externa en el heap.
+
+- `void * ptrs[N]` y `int sizes[]`: definen un arreglo de punteros y una lista de tamaños variados (desde 16B hasta 1KB) para simular diversas solicitudes de memoria de un proceso.
+
+- **Ciclo de asignación (`malloc`)**: solicita bloques de memoria al sistema e imprime sus direcciones hexadecimales para observar la ubicación de los datos y el espacio adicional utilizado por los metadatos (headers) de `glibc`.
+
+- **Estrategia de liberación selectiva (`free`)**: libera únicamente los bloques en índices pares (0, 2, 4...), creando intencionalmente "huecos" libres separados por bloques que aún están ocupados.
+
+- **Prueba de fragmentación**: intenta realizar una asignación grande (`malloc(1500)`) para comprobar si el gestor de memoria puede reutilizar los huecos dispersos o si se ve obligado a solicitar más memoria al kernel debido a la falta de contigüidad física (fragmentación externa).
+
+- `main()`: gestiona el ciclo de vida completo de la prueba, asegurando la limpieza final de los bloques impares para evitar fugas de memoria.
+
+
+### Punto 7 — `tlb_locality.c`
+
+Benchmark de rendimiento que mide el impacto de la localidad de referencia en la eficiencia del TLB y la traducción de direcciones.
+
+- `double ms(struct timespec a, struct timespec b)`: función auxiliar que calcula la diferencia de tiempo entre dos instantes con precisión de nanosegundos, convirtiendo el resultado a milisegundos.
+
+- **Acceso Secuencial (Alta Localidad)**: recorre un arreglo de 16 MB de forma lineal, lo que permite que una sola entrada del TLB sirva para múltiples accesos consecutivos (muchos hits), minimizando el costo de traducción.
+
+- **Algoritmo Fisher-Yates**: se utiliza para desordenar aleatoriamente un arreglo de índices (`idx`), garantizando que el segundo acceso a memoria no tenga un patrón predecible.
+
+- **Acceso Aleatorio (Baja Localidad)**: recorre el mismo arreglo utilizando los índices desordenados, lo que provoca constantes fallos de caché en el TLB (*TLB misses*) al saltar entre páginas distintas, obligando al hardware a consultar la tabla de páginas en RAM repetidamente.
+
+- `main()`: compara los tiempos de ejecución de ambos patrones de acceso, demostrando empíricamente cómo la falta de localidad espacial degrada el rendimiento del sistema debido al costo de la traducción de direcciones.
+
 ---
 
 ## Problemas presentados durante el desarrollo de la práctica y sus soluciones
